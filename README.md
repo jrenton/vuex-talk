@@ -60,7 +60,7 @@ new Vue({
 })
 ```
 
-With this example, we still get the same reactivity and 2-way data binding, thanks to the power of Vue. We can use this same object and can use it across multiple components. We now have our own centralized store!
+With this example, we still get the same reactivity and 2-way data binding, thanks to the power of Vue. We can use this same object and can use it across multiple components. We now have our own centralized store that automatically reacts to any changes that are made!
 
 [Demo reactive changes with multiple components]
 
@@ -73,9 +73,20 @@ So when is a good time to use Vuex? This depends on the situation, but a few gui
 - When you want to enforce structure. Vuex has some nice separation of concerns that helps you keep logic where it is needed.
 - Whenever you want to. Just because your app is simple doesn't mean you're forbidden from living your life.
 
-So now that you understand the benefits of Vuex and when to use it, how do we know when to use Vuex or local state or an event system?
+So how does it work, exactly?
 
-Even in large-scale applications that use Vuex, there are times when it simply is not necessary to use Vuex's state. After all, components have their own local state. Let's take an example:
+Vuex, in its simplest, bare bones version, is just a way of managing a javascript object that is your state. Many people are aware of the MVC pattern where you have your View, Controller, and your Model. I like to think of Vuex as something similar to MVC, where you have 3 layers of concern that starts with your View: The view doesn't really care where the data comes from. This is where `actions` come in. A view simply calls actions, which are in charge of orchistrating data, whether it comes from an API, websocket, a file, etc. It knows where the data comes from, and then how to store it (not permanently, just to use in the Vue application). The process of storing the data happens via mutations. An action calls a mutation with an optional payload, and then the mutation is what updates (or mutates) the Vuex state.
+
+[Demo a simple working app with Vuex]
+
+Hopefully you now understand what Vuex is, its benefits, and when to use it. However, even in large-scale applications that use Vuex, there are times when it simply is not necessary (and perhaps even preferred) to use Vuex's state. After all, components have their own local state. There are many ways to use/share data, which include:
+
+- Vuex (or just think of it as a global object)
+- Props / Events (parent-child communication)
+- Local data (data that only one component uses)
+- Event bus (global app communication)
+
+I believe each have their own use cases, so how can we determine which strategy fits into what scenario? Let's take an example:
 
 ```html
 <form @submit.prevent="saveName">
@@ -109,7 +120,7 @@ new Vue({
 })
 ```
 
-There are minor details excluded here, but the basic idea is that we want to show a loader when the form is saving. This is a common pattern that is used, where a form needs to show a loader, an overlay, buttons being disabled, text being displayed, etc (And this pattern of an `isSaving` variable can actually be abstracted in a mixin and tied in with a validator, but that's outside of the scope of this). Basically only the current component's form cares that it is saving. It is not necessary that `isSaving` is saved in the Vuex state.
+There are minor details excluded here, but the basic idea is that we want to show a loader when the form is saving. This is a common pattern that is used, where a form needs to show a loader, an overlay, buttons being disabled, text being displayed, etc (And this pattern of an `isSaving` variable can actually be abstracted in a mixin and tied in with a validator, but that's outside of the scope of this). Only the current component's form cares that it is saving. It is not necessary that `isSaving` is saved in the Vuex state.
 
 But what if a different component does care that this form is in the process of saving, and it is not a child, parent or sibling?
 
