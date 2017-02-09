@@ -6,7 +6,7 @@ The Vue.js framework, which Vuex is a library for, has been rapidly expanding in
 
 ![Vuex Interest](./public/vuex-interest.png)
 
-I believe this is largely due to its barrier to entry and its simple, concise API. It can be plugged into an existing application with just a few lines of code:
+I believe this is largely due to its barrier to entry and its simple, concise API. Also, it can be plugged into an existing application with just a few lines of code:
 
 ```html
 <div id="app"></div>
@@ -37,9 +37,7 @@ This is pretty much as simple as it gets in the Javascript world. There is not a
 
 So why would we betray this great simplicity and introduce another layer of confusion with Vuex?
 
-Because our apps grow. Not everything is as simple as the TODO app, or the contrived examples you find online.
-
-But, you don't have to use Vuex! After all, Vuex's state is simply a regular javascript object. Therefore, we can mimic Vuex's state on our own:
+Because our apps grow. When you can visually divide elements from a UI into their own separate components, you start to build a tree, where all components are a decendant of just one root component. Each child component has its own data that is represented in its own contained UI. We can visually model an application in this way, and is essentially how HTML is structured. An application's "state" can be seen as the representation of the data (that influences the UI display/behavior) in a javascript object. This is at the core of Vuex. A simple javascript object that represents the state of the application at a given moment in time. Therefore, we can mimic Vuex's state on our own:
 
 ```javascript
 const state = {
@@ -60,7 +58,7 @@ new Vue({
 })
 ```
 
-With this example, we still get the same reactivity and 2-way data binding, thanks to the power of Vue. We can use this same object and can use it across multiple components. We now have our own centralized store that automatically reacts to any changes that are made!
+With this example, we still get the same reactivity and 2-way data binding thanks to the power of Vue. We can use this same object and can use it across multiple components. We now have our own centralized store that automatically reacts to any changes that are made!
 
 [Demo reactive changes with multiple components]
 
@@ -75,7 +73,7 @@ So when is a good time to use Vuex? This depends on the situation, but a few gui
 
 So how does it work, exactly?
 
-Vuex, in its simplest, bare bones version, is just a way of managing a javascript object that is your state. Many people are aware of the MVC pattern where you have your View, Controller, and your Model. I like to think of Vuex as something similar to MVC, where you have 3 layers of concern that starts with your View: The view doesn't really care where the data comes from. This is where `actions` come in. A view simply calls actions, which are in charge of orchistrating data, whether it comes from an API, websocket, a file, etc. It knows where the data comes from, and then how to store it (not permanently, just to use in the Vue application). The process of storing the data happens via mutations. An action calls a mutation with an optional payload, and then the mutation is what updates (or mutates) the Vuex state.
+Vuex, in its simplest, bare bones version, is just a way of managing a javascript object (your application state). Many people are aware of the MVC pattern where you have your View, Controller, and your Model. I like to think of Vuex as something similar to MVC, where you have 3 layers of concern that starts with your View: The view doesn't really care where the data comes from. This is where `actions` come in. A view simply calls actions, which are in charge of orchistrating data, whether it comes from an API, websocket, a file, etc. It knows where the data comes from, and then how to store it (not permanently, just to use in the Vue application). The process of storing the data happens via mutations. An action calls a mutation with an optional payload, and then the mutation is what updates (or mutates) the Vuex state.
 
 [Demo a simple working app with Vuex]
 
