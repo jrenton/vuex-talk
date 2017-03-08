@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Vuex</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif', 'Helvetica', 'sans-serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz', 'Arial', 'sans-serif';
+        font-weight: normal;
+        margin: 0;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono', monospace; }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+    <br><br><br><br><br>
+    # When and why should you use Vuex?
+    ### In-depth discussion about when it is appropriate to use Vuex and when to not use it, alternatives and downfalls of it.
+
+    <br>
+    ### Justus Renton
+
+    ---
+
+    ### Vue.js is simple
+
+    ```html
+    <ul id="app">
+      <li v-for="item in todoItems">
+        {{ item.title }}
+      </li>
+    </ul>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/vue/2.2.1/vue.min.js"></script>
+    ```
+    ```javascript
+    <script>
+    new Vue({
+      el: '#app',
+      data () {
+        return {
+          todoItems: [
+            {
+              title: 'Do laundry',
+              isComplete: false  
+            }
+          ]
+        }
+      }
+    })
+    </script>
+    ```
+
+    Renders:
+    ```
+    - Do laundry
+    ```
+    ---
+
+    ### How do you pass data?
+    - Vue.js uses the data down, events up approach.
+
+    ```html
+    <ul id="app">
+      <todo-item v-for="item in todoItems" :item="item" @completed="doSomething"></todo-item>
+    </ul>
+    ```
+    ```javascript
+    var todoItem = new Vue({
+      props: ['item'],
+      template: `<li>
+                  <input type="checkbox" v-model="item.isComplete" @click="toggle">
+                  {{ item.title }}
+                </li>`,
+      methods: {
+        toggle () {
+          if (this.item.isComplete) {
+            this.$emit('completed')
+          }
+        }
+      }
+    })
+    var vm = new Vue({
+      el: '#app',
+      data () {
+        return {
+          todoItems: [{ title: 'Do laundry', isComplete: false }]
+        }
+      },
+      components: {
+        todoItem
+      }
+    })
+    ```
+    ---
+
+    ### Complexity strikes
+    - Realize that data down, events up is not sustainable.
+
+    ```html
+    <app>
+      <left-pane>
+        <search></search>
+        <conversation-list>
+          <conversation-summary>
+            <avatar></avatar>
+            <message></message>
+          </conversation-summary>
+        </conversation-list>
+      </left-pane>
+      <right-pane>
+        <conversation>
+          <conversation-header>
+            <student-info></student-info>
+          </conversation-header>
+          <conversation-body>
+            <message-list>
+              <message></message>
+            </message-list>
+          </conversation-body>
+          <conversation-input></conversation-input>
+        </conversation>
+      </right-pane>
+    </app>
+    ```
+    ---
+    ### Global event bus
+    - An empty component acts as an event bus.
+
+    ```javascript
+    var eventBus = new Vue()
+
+    var login = new Vue({
+      methods: {
+        login () {
+          eventBus.$emit('loggedIn')
+        }
+      }
+    })
+
+    var game = new Vue({
+      data() {
+        return {
+          canPlay: false
+        }
+      },
+      created() {
+        eventBus.$on('loggedIn', () => {
+          this.canPlay = true
+        })
+      }
+    })
+    ```
+    ---
+    ### Global state
+    - One object is shared across multiple components.
+
+    ```javascript
+    var state = {
+      isLoggedIn: false
+    }
+
+    var login = new Vue({
+      methods: {
+        login () {
+          state.isLoggedIn = true
+        }
+      }
+    })
+
+    var game = new Vue({
+      data () {
+        return {
+          canPlay: state.isLoggedIn
+        }
+      }
+    })
+    ```
+
+    ---
+
+    ### Demo Time?
+
+    ---
+
+    ## Why use Vuex?
+
+    - State is fully reactive
+    - Only one way to change the state
+      - Predictable state changes
+      - Easier debugging
+    - Enforces a structure
+    - Great for larger applications
+
+    ---
+
+    ### Vuex example
+
+    ```javascript
+    var vuexStore = {
+      state: {
+        isLoggedIn: false
+      },
+
+      mutations: {
+        loggedIn (state, isLoggedIn) {
+          state.isLoggedIn = isLoggedIn;
+        }
+      }
+    }
+
+    var login = new Vue({
+      methods: {
+        login () {
+          vuexStore.commit('loggedIn', true)
+        }
+      }
+    })
+
+    var game = new Vue({
+      computed: {
+        canPlay () {
+          return vuexStore.state.isLoggedIn
+        }
+      }
+    })
+    ```
+
+    ---
+
+    More demos
+
+    ---
+
+    ## When to use Vuex? (vs local data or props)
+
+    - What owns the data?
+    - Does a parent component need to manage the data?
+    - Reduce components acting as passthrough
+    - Try to make components as encapsulated as possible
+    - Try to avoid components knowing about global state
+    - Think DRY
+
+    ---
+
+    ## Types of components
+    How we pass data and whether we use Vuex directly may depend on the type of component we are using:
+
+    ### Dumb component
+    Data passed into each component is unique and the component just knows how to display that data. (Avatar, StarRating)
+
+    ### Dependent component
+    Data passed into each component is unique, but the component still needs to fetch its own data.
+
+    ### Fully encapsulated component
+    Component should own its own data completely.
+
+    ---
+
+    Questions?
+
+    ---
+
+    ### What is Vuex?
+
+    <img src="flow.png" alt="Vuex diagram" style="width: 400px;"/>
+
+    ---
+
+    ### What is Vuex?
+
+    ![Vuex diagram](vuex.png "Vuex diagram")
+
+    ---
+
+    ### Set up the store
+
+    ```javascript
+    import Vue from 'vue';
+    import Vuex from 'vuex';
+
+    Vue.use(Vuex);
+
+    // This will be the state of our application.
+    const state = {
+      user: {
+        firstName: 'Bob',
+        lastName: 'Dole',
+      },
+    };
+
+    // Mutations are the means by which we mutate the state.
+    const mutations = {
+      SET_USER(state, user) {
+        state.user = user;
+      },
+    };
+
+    // Initialize the vuex store.
+    const store = new Vuex.Store({
+      state,
+      mutations,
+    });
+    ```
+
+    ---
+
+    ### Inject store into the root component
+
+    ```javascript
+    new Vue({
+      el: '#app',
+      // Inject the store into the Vue component.
+      // Can be accessed via this.$store in all components.
+      store,
+    });
+    ```
+
+    And our html file:
+    ```html
+    <html>
+      <body>
+        <div id="app"></div>
+      </body>
+    </html>
+    ```
+
+    So now we have the most basic setup to test Vue with Vuex.
+    ---
+
+    ### Let's check out some code
+
+    ---
+
+    ### What about web scale?
+
+    When your application begins to grow, your state, actions, mutations, etc become too large to be manageable. Luckily, Vuex introduces **modules** to solve this problem. Each module has its own state, mutations, actions and getters.
+
+    ```javascript
+    const moduleA = {
+      state: { ... },
+      mutations: { ... },
+      actions: { ... },
+    };
+
+    const moduleB = {
+      state: { ... },
+      mutations: { ... },
+      actions: { ... },
+    };
+
+    const store = new Vuex.Store({
+      modules: {
+        a: moduleA,
+        b: moduleB,
+      },
+    });
+
+    store.state.a // -> moduleA's state
+    store.state.b // -> moduleB's state
+    ```
+
+    ---
+
+    ### Architecture with modules
+
+    ```
+    ├── index.html
+    ├── main.js
+    ├── api
+    │   └── ... # abstractions for making API requests
+    ├── components
+    │   ├── App.vue
+    │   └── ...
+    └── store
+        ├── index.js          # where we assemble modules and export the store
+        ├── actions.js        # root actions
+        ├── mutations.js      # root mutations
+        └── modules
+            ├── cart.js       # cart module
+            └── products.js   # products module
+    ```
+
+    ---
+
+    ### Questions?
+
+    ---
+
+    ### Documentation
+
+    - [View the docs](https://vuex.vuejs.org/)
+    - [Plugins](https://vuex.vuejs.org/en/plugins.html)
+    - [Testing](https://vuex.vuejs.org/en/testing.html)
+    - [Hot Reloading](https://vuex.vuejs.org/en/hot-reload.html)
+
+    </textarea>
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>

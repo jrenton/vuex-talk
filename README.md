@@ -9,18 +9,17 @@ The Vue.js framework, which Vuex is a library for, has been rapidly expanding in
 I believe this is largely due to its barrier to entry and its simple, concise API. Also, it can be plugged into an existing application with just a few lines of code:
 
 ```html
-<div id="app"></div>
-<script src="vue.js"></script>
+<ul id="app">
+  <li v-for="item in todoItems">
+    {{ item.title }}
+  </li>
+</ul>
+<script src="//cdnjs.cloudflare.com/ajax/libs/vue/2.2.1/vue.min.js"></script>
 ```
 ```javascript
 new Vue({
   el: '#app',
-  template: `
-    <div v-for="item in todoItems">
-      {{ item.title }}
-    </div>
-  `,
-  data() {
+  data () {
     return {
       todoItems: [
         {
@@ -28,8 +27,8 @@ new Vue({
           isComplete: false  
         }
       ]
-    };
-  },
+    }
+  }
 })
 ```
 
@@ -73,18 +72,18 @@ So when is a good time to use Vuex? This depends on the situation, but a few gui
 
 So how does it work, exactly?
 
-Vuex, in its simplest, bare bones version, is just a way of managing a javascript object (your application state). Many people are aware of the MVC pattern where you have your View, Controller, and your Model. I like to think of Vuex as something similar to MVC, where you have 3 layers of concern that starts with your View: The view doesn't really care where the data comes from. This is where `actions` come in. A view simply calls actions, which are in charge of orchistrating data, whether it comes from an API, websocket, a file, etc. It knows where the data comes from, and then how to store it (not permanently, just to use in the Vue application). The process of storing the data happens via mutations. An action calls a mutation with an optional payload, and then the mutation is what updates (or mutates) the Vuex state.
+Vuex, in its simplest, bare bones version, is just a way of managing a javascript object (or "state management"). Many people are aware of the MVC pattern where you have your View, Controller, and your Model. I like to think of Vuex as something similar to MVC, where you have 3 layers of concern that starts with your View: The view doesn't really care where the data comes from. This is where `actions` come in. A view simply calls actions, which are in charge of orchistrating data, whether it comes from an API, websocket, a file, etc. It knows where the data comes from, and then how to store it (not permanently, just to use in the Vue application). The process of storing the data happens via mutations. An action calls a mutation with an optional payload, and then the mutation is what updates (or mutates) the Vuex state.
 
 [Demo a simple working app with Vuex]
 
-Hopefully you now understand what Vuex is, its benefits, and when to use it. However, even in large-scale applications that use Vuex, there are times when it simply is not necessary (and perhaps even preferred) to use Vuex's state. After all, components have their own local state. There are many ways to use/share data, which include:
+Hopefully you now understand what Vuex is and the motivations for using it. However, even in large-scale applications that are currently using Vuex, there are times when it simply is not necessary to use Vuex's state. After all, components all have their own local state. There are several ways to use/share data, which include:
 
-- Vuex (or just think of it as a global object)
+- Vuex (or any centralized state)
 - Props / Events (parent-child communication)
 - Local data (data that only one component uses)
 - Event bus (global app communication)
 
-I believe each have their own use cases, so how can we determine which strategy fits into what scenario? Let's take an example:
+I believe each have their own use cases, so let's begin with an example:
 
 ```html
 <form @submit.prevent="saveName">
@@ -118,14 +117,18 @@ new Vue({
 })
 ```
 
-There are minor details excluded here, but the basic idea is that we want to show a loader when the form is saving. This is a common pattern that is used, where a form needs to show a loader, an overlay, buttons being disabled, text being displayed, etc (And this pattern of an `isSaving` variable can actually be abstracted in a mixin and tied in with a validator, but that's outside of the scope of this). Only the current component's form cares that it is saving. It is not necessary that `isSaving` is saved in the Vuex state.
+There are minor details excluded here, but the basic idea is that we want to show a loader when the form is saving. This is a common pattern that is used. When a form is in the middle of saving, it needs to show a loader, an overlay, buttons being disabled, text being displayed, etc (And this pattern of an `isSaving` variable can actually be abstracted in a mixin and tied in with a validator, but that's outside of the scope of this). Only the current component's form cares that it is saving. It is not necessary that `isSaving` is saved in the Vuex state.
 
 But what if a different component does care that this form is in the process of saving, and it is not a child, parent or sibling?
 
-In that case, we can (and perhaps should) save it in the Vuex store. This distinction is very important. The reason is that we can pass data down to children, and pass events up to parents. Also, the action that the other component cares about matters as well. What if the component only cares about the moment that particular form was saved? Here is an example:
+In that case, we can (and perhaps should) save it in the Vuex store. This distinction is very important. The reason is that we can pass data down to children, and pass events up to parents.
+
+[Demo parent-child communication]
+
+Also, the action that the other component cares about matters as well. What if the component only cares about the moment that particular form was saved? Here is an example:
 
 ```javascript
-const eventBus = new Vue();
+const eventBus = new Vue()
 
 new Vue({
   methods: {

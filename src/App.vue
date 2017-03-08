@@ -1,27 +1,40 @@
 <template>
   <div id="app">
-    <input type="text" v-model="coordinates.x">
-    <input type="text" v-model="coordinates.y">
-    <h1>App!</h1>
-    ({{ coordinates.x }}, {{ coordinates.y }})
-    <box><box>
+    <h2>Welcome to a Vue.js game!</h2>
+    <h3>Game coordinates:</h3>
+    <input type="text" placeholder="x" v-model="coordinates.x">
+    <input type="text" placeholder="y" v-model="coordinates.y">
+    <div class="flex">
+      <game class="border-gray" v-for="player in players" :player="player"></game>
+    </div>
+    <login class="border-gray"></login>
   </div>
 </template>
 
 <script>
-import Box from './components/Box.vue';
+import state from './state'
+
+import Game from './components/Game.vue'
+import Login from './components/Login.vue'
 
 export default {
   name: 'app',
 
-  data() {
+  data () {
     return {
-      coordinates: this.$state.coordinates
+      players: [
+        { id: 1, name: 'Bob' },
+        { id: 2, name: 'Bill' },
+        { id: 3, name: 'Sally' },
+        { id: 4, name: 'Jane' }
+      ],
+      coordinates: state.coordinates
     }
   },
 
   components: {
-    Box
+    Game,
+    Login
   }
 }
 </script>
@@ -33,7 +46,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
 }
 
 h1, h2 {
@@ -52,5 +64,23 @@ li {
 
 a {
   color: #42b983;
+}
+
+.border-gray {
+  border: 2px solid #ccc;
+  padding: 20px;
+  margin: 20px;
+}
+
+.flex {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+input[type=text] {
+  width: 40px;
+  padding: 5px;
 }
 </style>
