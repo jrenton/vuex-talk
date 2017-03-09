@@ -2,24 +2,30 @@
   <div class="game" :class="[ canPlay ? 'success': 'error' ]">
     <h3>{{ player.name }}. Player {{ player.id }}</h3>
     <p>You <strong>{{ playText }}</strong> play the game.</p>
-    <input type="text" v-model="coordinates.x">
-    <input type="text" v-model="coordinates.y">
+    <input type="text" v-model="x">
+    <input type="text" v-model="y">
   </div>
 </template>
 
 <script>
-import state from '../state'
-
 export default {
   props: ['player'],
   data () {
     return {
-      coordinates: state.coordinates
+      coordinates: this.$store.state.coordinates
     }
   },
   computed: {
+    x () {
+      return this.$state.coordinates.x
+    },
+
+    y () {
+      return this.$state.coordinates.y
+    },
+
     canPlay () {
-      return state.isLoggedIn
+      return this.$store.state.isLoggedIn
     },
     playText () {
       return this.canPlay ? 'can' : 'cannot'
