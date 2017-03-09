@@ -10,11 +10,6 @@
 <script>
 export default {
   props: ['player'],
-  data () {
-    return {
-      coordinates: this.$store.state.coordinates
-    }
-  },
   computed: {
     x () {
       return this.$state.coordinates.x
@@ -25,7 +20,7 @@ export default {
     },
 
     canPlay () {
-      return this.$store.state.isLoggedIn
+      return this.$state.isLoggedIn
     },
     playText () {
       return this.canPlay ? 'can' : 'cannot'
@@ -37,8 +32,8 @@ export default {
         return
       }
 
-      this.coordinates.x = event.x
-      this.coordinates.y = event.y
+      this.x = event.x
+      this.y = event.y
     },
   },
   mounted() {
