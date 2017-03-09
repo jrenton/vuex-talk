@@ -27,8 +27,13 @@ export default {
         { id: 2, name: 'Bill' },
         { id: 3, name: 'Sally' },
         { id: 4, name: 'Jane' }
-      ],
-      coordinates: state.coordinates
+      ]
+    }
+  },
+
+  computed: {
+    coordinates () {
+      return state.coordinates
     }
   },
 

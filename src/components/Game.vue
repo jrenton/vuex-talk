@@ -2,14 +2,15 @@
   <div class="game" :class="[ canPlay ? 'success': 'error' ]">
     <h3>{{ player.name }}. Player {{ player.id }}</h3>
     <p>You <strong>{{ playText }}</strong> play the game.</p>
-    <input type="text" v-model="x">
-    <input type="text" v-model="y">
+    <input type="text" v-model="x" @click.stop>
+    <input type="text" v-model="y" @click.stop>
   </div>
 </template>
 
 <script>
 export default {
   props: ['player'],
+
   computed: {
     x () {
       return this.$state.coordinates.x
@@ -22,24 +23,30 @@ export default {
     canPlay () {
       return this.$state.isLoggedIn
     },
+
     playText () {
       return this.canPlay ? 'can' : 'cannot'
     }
   },
+
   methods: {
     clicked (event) {
       if (!this.canPlay) {
         return
       }
 
-      this.x = event.x
-      this.y = event.y
-    },
+      this.$store.commit('setCoordinates', {
+        x: event.x,
+        y: event.y
+      })
+    }
   },
-  mounted() {
+
+  mounted () {
     this.$el.addEventListener('click', this.clicked)
   },
-  beforeDestroy() {
+
+  beforeDestroy () {
     this.$el.removeEventListener('click', this.clicked)
   }
 }

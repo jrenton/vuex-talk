@@ -7,12 +7,12 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       isLoggingIn: false
     }
   },
-  
+
   methods: {
     login () {
       this.isLoggingIn = true

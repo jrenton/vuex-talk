@@ -9,6 +9,10 @@ export default new Vuex.Store({
   mutations: {
     loggedIn (state, isLoggedIn) {
       state.isLoggedIn = isLoggedIn
+    },
+
+    setCoordinates (state, coordinates) {
+      state.coordinates = coordinates
     }
   }
 })

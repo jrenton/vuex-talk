@@ -11,9 +11,10 @@ Vue.mixin({
     } else if (options.parent && options.parent.$state) {
       this.$state = options.parent.$state
     }
-  },
+  }
 })
 
+// eslint-disable-next-line no-new
 new Vue({
   store,
   state,
